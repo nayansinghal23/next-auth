@@ -20,6 +20,7 @@ import { useState } from "react";
 import { register } from "@/actions/register";
 
 const RegisterForm = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -34,12 +35,15 @@ const RegisterForm = () => {
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
+    setLoading(true);
     register(values)
       .then((data) => {
         setError(data.error);
         setSuccess(data?.success);
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
       });
   };
@@ -61,7 +65,12 @@ const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="John Doe" type="text" />
+                    <Input
+                      disabled={loading}
+                      {...field}
+                      placeholder="John Doe"
+                      type="text"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -78,6 +87,7 @@ const RegisterForm = () => {
                       {...field}
                       placeholder="john.doe@gmail.com"
                       type="email"
+                      disabled={loading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -96,6 +106,7 @@ const RegisterForm = () => {
                       type="password"
                       autoComplete="off"
                       {...field}
+                      disabled={loading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -105,7 +116,7 @@ const RegisterForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full">
+          <Button disabled={loading} type="submit" className="w-full">
             Register
           </Button>
         </form>
