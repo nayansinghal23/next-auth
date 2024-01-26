@@ -10,6 +10,22 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      await prismadb.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          emailVerified: new Date(),
+        },
+      });
+    },
+  },
   callbacks: {
     async session({ session, token }: any) {
       // When user will we authenticated, jwt function will execute first and then session function will execute which will add 2 new properties - userId as id and userRole as role and will send it to the client
