@@ -20,6 +20,7 @@ import { login } from "@/actions/login";
 import { useState } from "react";
 
 const LoginForm = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -33,10 +34,12 @@ const LoginForm = () => {
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError("");
     setSuccess("");
+    setLoading(true);
     login(values)
-      .then((data) => {
-        setError(data.error);
+      .then((data: any) => {
+        setError(data?.error);
         setSuccess(data?.success);
+        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -64,6 +67,7 @@ const LoginForm = () => {
                       {...field}
                       placeholder="john.doe@gmail.com"
                       type="email"
+                      disabled={loading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -81,6 +85,7 @@ const LoginForm = () => {
                       placeholder="******"
                       type="password"
                       autoComplete="off"
+                      disabled={loading}
                       {...field}
                     />
                   </FormControl>
@@ -91,7 +96,7 @@ const LoginForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button type="submit" className="w-full">
+          <Button disabled={loading} type="submit" className="w-full">
             Login
           </Button>
         </form>
