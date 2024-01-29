@@ -27,6 +27,13 @@ export const {
     },
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+      if (!user.id) return false;
+      const existingUser = await getUserById(user.id);
+      if (!existingUser?.emailVerified) return false;
+      return true;
+    },
     async session({ session, token }: any) {
       // When user will we authenticated, jwt function will execute first and then session function will execute which will add 2 new properties - userId as id and userRole as role and will send it to the client
       if (session.user && token.sub) {
