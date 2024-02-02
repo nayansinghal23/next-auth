@@ -1,9 +1,7 @@
 "use client";
-import { useCurrentUser } from "@/hooks/user-current-user";
 import { signOut } from "next-auth/react";
 
 const Settings = () => {
-  const user = useCurrentUser();
   const onClick = () => {
     signOut();
   };
