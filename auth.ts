@@ -4,6 +4,7 @@ import authConfig from "./auth.config";
 import { prismadb } from "./lib/prismadb";
 import { getUserById } from "./data/user";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { getAccountByUserId } from "./data/account";
 
 export const {
   handlers: { GET, POST },
@@ -57,6 +58,15 @@ export const {
       if (session.user && token.isTwoFactorEnabled) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
       }
+      if (session.user && token.name) {
+        session.user.name = token.name;
+      }
+      if (session.user && token.email) {
+        session.user.email = token.email;
+      }
+      if (session.user && token.isOAuth) {
+        session.user.isOAuth = token.isOAuth;
+      }
       return session;
     },
     async jwt({ token }) {
@@ -64,6 +74,11 @@ export const {
       if (!token.sub) return token;
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
+      const existingAccount = await getAccountByUserId(existingUser.id);
+
+      token.isOAuth = !!existingAccount;
+      token.name = existingUser.name;
+      token.email = existingUser.email;
       token.role = existingUser.role;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
       return token;

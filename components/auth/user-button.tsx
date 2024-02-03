@@ -18,9 +18,9 @@ const UserButton = () => {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src={user?.image || ""} />
-          <AvatarFallback>
-            <FaUser />
+          <AvatarImage src={user?.image || ""} className="w-8 h-8 rounded-lg" />
+          <AvatarFallback className="bg-sky-500">
+            <FaUser className="text-white" />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

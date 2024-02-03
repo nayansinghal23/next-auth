@@ -33,3 +33,28 @@ export const NewPasswordSchema = z.object({
     message: "Minimum 6 characters required",
   }),
 });
+
+export const SettingsSchema = z
+  .object({
+    name: z.optional(z.string()),
+    email: z.optional(z.string().email()),
+    password: z.optional(z.string().min(6)),
+    newPassword: z.optional(z.string().min(6)),
+    isTwoFactorEnabled: z.optional(z.boolean()),
+    role: z.enum(["ADMIN", "USER"]),
+  })
+  .refine(
+    (data) => {
+      if (
+        (data.password && !data.newPassword) ||
+        (data.newPassword && !data.password)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "New passsword is required!",
+      path: ["newPassword", "password"],
+    }
+  );
